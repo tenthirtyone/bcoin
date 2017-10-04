@@ -25,7 +25,7 @@ const node = new FullNode({
   dbhost,
   apiKey: 'foo',
   walletAuth: true,
-  db: 'leveldb',
+  db: 'mem',
   workers: true,
   prefix: '.',
   indexTX: true,
@@ -50,6 +50,11 @@ let hash = null;
 
 describe('HTTP', function() {
   this.timeout(15000);
+
+  before(async function () {
+    await db.open();
+    await db.reset();
+  });
 
   it('should open node', async () => {
     consensus.COINBASE_MATURITY = 0;
