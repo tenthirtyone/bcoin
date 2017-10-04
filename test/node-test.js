@@ -19,7 +19,7 @@ const dbname = 'bcoin-test';
 const dbhost = 'localhost';
 
 const node = new FullNode({
-  db: 'leveldb',
+  db: 'mem',
   apiKey: 'foo',
   network: 'regtest',
   workers: true,
@@ -99,6 +99,11 @@ async function mineCSV(fund) {
 describe('Node', function() {
   this.timeout(15000);
 
+  before(async function () {
+    await db.open();
+    await db.reset();
+  });
+
   it('should open chain and miner', async () => {
     miner.mempool = null;
     consensus.COINBASE_MATURITY = 0;
@@ -160,11 +165,9 @@ describe('Node', function() {
   it('should handle a reorg', async () => {
     assert.strictEqual(wdb.state.height, chain.height);
     assert.strictEqual(chain.height, 11);
-
     const entry = await chain.db.getEntry(tip2.hash);
     assert(entry);
     assert.strictEqual(chain.height, entry.height);
-
     const block = await miner.mineBlock(entry);
     assert(block);
 
@@ -721,5 +724,8 @@ describe('Node', function() {
   it('should cleanup', async () => {
     consensus.COINBASE_MATURITY = 100;
     await node.close();
+    await db.open();
+    // await db.reset();
+    await db.close();
   });
 });
