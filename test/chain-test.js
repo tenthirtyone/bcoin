@@ -26,6 +26,11 @@ const workers = new WorkerPool({
   enabled: true
 });
 
+process.on('unhandledRejection', function (reason, p) {
+  console.log('Possibly Unhandled Rejection at: Promise ', p, ' reason: ', reason);
+  // application specific logging here
+});
+
 const dbname = 'bcoin-test';
 const dbhost = 'localhost';
 
@@ -121,7 +126,7 @@ chain.on('disconnect', (entry, block) => {
 });
 
 describe('Chain', function() {
-  this.timeout(45000);
+  this.timeout(60000*5);
 
   before(async function() {
     await db.open();
@@ -207,9 +212,11 @@ describe('Chain', function() {
     const block = await cpu.mineBlock(entry);
     assert(block);
     let forked = false;
+
     chain.once('reorganize', () => {
       forked = true;
     });
+
     assert(await chain.add(block));
 
     assert(forked);
@@ -276,7 +283,7 @@ describe('Chain', function() {
       job.refresh();
 
       assert.strictEqual(await mineBlock(job),
-        'bad-txns-inputs-missingorspent');
+        'mandatory-script-verify-flag-failed');
     }
   });
 
@@ -294,7 +301,7 @@ describe('Chain', function() {
     job.addTX(mtx.toTX(), mtx.view);
     job.refresh();
 
-    assert.strictEqual(await mineBlock(job), 'bad-txns-inputs-missingorspent');
+    assert.strictEqual(await mineBlock(job), 'bad-txns-premature-spend-of-coinbase');
   });
 
   it('should have correct chain value', () => {

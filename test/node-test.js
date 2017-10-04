@@ -10,6 +10,7 @@ const Coin = require('../lib/primitives/coin');
 const Script = require('../lib/script/script');
 const Opcode = require('../lib/script/opcode');
 const FullNode = require('../lib/node/fullnode');
+const MDB = require('../lib/db/mongo');
 const MTX = require('../lib/primitives/mtx');
 const TX = require('../lib/primitives/tx');
 const Address = require('../lib/primitives/address');
@@ -28,6 +29,11 @@ const node = new FullNode({
   indexTX: true,
   indexAddress: true,
   plugins: [require('../lib/wallet/plugin')]
+});
+
+const db = new MDB({
+  dbname,
+  dbhost
 });
 
 const chain = node.chain;
@@ -91,7 +97,7 @@ async function mineCSV(fund) {
 }
 
 describe('Node', function() {
-  this.timeout(5000);
+  this.timeout(15000);
 
   it('should open chain and miner', async () => {
     miner.mempool = null;
