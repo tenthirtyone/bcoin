@@ -4,9 +4,11 @@ const bcoin = require('../..');
 const FullNode = bcoin.fullnode;
 
 const node = new FullNode({
-  network: 'testnet',
+  network: 'bitcoincash',
   db: 'memory',
-  workers: true
+  workers: true,
+  'log-level': 'debug',
+  'http-port': 8332
 });
 
 (async () => {
