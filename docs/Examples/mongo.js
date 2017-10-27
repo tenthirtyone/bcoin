@@ -6,9 +6,10 @@ const FullNode = bcoin.fullnode;
 const node = new FullNode({
   network: 'main',
   dbname: 'bcoin',
-  dbhost: '45.76.61.77',
+  dbhost: 'localhost',
   checkpoints: true,
   workers: true,
+  'workers-size': 8,
   logLevel: 'info',
   'max-inbound': 8,
   'max-outbound': 8,
