@@ -19,7 +19,7 @@ const node = new FullNode({
   await node.open();
   await node.connect();
 
-  node.startSync();
+  // node.startSync();
 })().catch((err) => {
   console.error(err.stack);
   process.exit(1);
